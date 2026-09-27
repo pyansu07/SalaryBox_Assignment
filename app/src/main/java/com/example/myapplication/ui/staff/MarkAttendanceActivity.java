@@ -323,11 +323,16 @@ public class MarkAttendanceActivity extends AppCompatActivity {
                 selfieFile.getAbsolutePath(),
                 latitude,
                 longitude);
-        attendanceRepository.insert(attendance, () -> runOnUiThread(() -> {
-            setProcessing(false);
-            Toast.makeText(this, "Attendance marked - " + confidencePercent + "% confidence", Toast.LENGTH_LONG).show();
-            finish();
-        }));
+        attendanceRepository.insert(attendance,
+                () -> runOnUiThread(() -> {
+                    setProcessing(false);
+                    Toast.makeText(this, "Attendance marked - " + confidencePercent + "% confidence", Toast.LENGTH_LONG).show();
+                    finish();
+                }),
+                () -> runOnUiThread(() -> {
+                    selfieFile.delete();
+                    onRoundFailed("Could not save attendance. Please try again.");
+                }));
     }
 
     /** Cosine similarity is in [-1, 1]; clamp the negative half to 0% for a readable percentage. */
