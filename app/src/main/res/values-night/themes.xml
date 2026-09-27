@@ -1,7 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!--
+          Keep the brand teal + white text pairing identical to the day theme (see values/themes.xml)
+          instead of swapping to a lighter primary for "dark mode contrast" - a previous version of
+          this theme set colorPrimary to brand_primary_light (a near-white mint meant for container
+          backgrounds), which turned every colorPrimary-background toolbar pale in dark mode and,
+          combined with outlined buttons/text reading their color from ?attr/colorPrimary, produced
+          low-contrast light-on-light text app-wide. A colored app bar doesn't need to invert for
+          dark mode; only the screen background/surfaces do.
+        -->
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorOnPrimary">@color/brand_on_primary</item>
+        <item name="colorPrimaryContainer">@color/brand_primary_dark</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorSecondary">@color/brand_secondary</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:statusBarColor">@color/brand_primary_dark</item>
     </style>
 </resources>

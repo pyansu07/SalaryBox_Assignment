@@ -54,5 +54,6 @@ public class AttendanceHistoryActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (geocoderHelper != null) geocoderHelper.shutdown();
+        if (adapter != null) adapter.shutdown();
     }
 }
