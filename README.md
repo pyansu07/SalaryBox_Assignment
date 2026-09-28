@@ -164,8 +164,36 @@ enrolled?" - only "does this face match the person who just logged in?". 1:N sea
 real cost (comparing against every staff member, and materially higher false-accept risk as the
 enrolled population grows) to solve a problem this app doesn't have.
 
+### Design note: No backend, by design
+
+This app is fully on-device: Room (SQLite) for storage, TFLite for face matching, and no server or
+API. This is a deliberate decision, not a gap.
+
+- **The brief allows it.** The assignment explicitly says any backend or database is fine, "a local
+  one is fine", so the focus stayed on the face-recognition pipeline and attendance recording.
+- **There is no network boundary to cross.** An API exists to let one machine reach data on another.
+  Here the UI, database, and ML inference all run in the same app process on the same device, so the
+  `repository` layer is an in-process call rather than an HTTP request. Adding a REST layer would
+  only add latency, serialization, and failure modes without adding capability.
+- **Privacy.** Face embeddings and selfies are biometric data. Keeping them on-device (encrypted at
+  rest with an Android Keystore key) means they are never transmitted or stored on a server.
+- **Works offline.** Verification and attendance marking need no connectivity. Only reverse geocoding
+  in the history view benefits from a network, and it degrades gracefully to raw coordinates.
+- **Scope vs. time.** Building auth, an API, and a hosted database would have consumed time better
+  spent on the quality gate, alignment, liveness, and multi-sample enrolment.
+
+**Trade-offs:** data lives on one device only, so there is no cross-device sync, no central admin
+dashboard, and uninstalling the app deletes all data.
+
+**What would change in production:** multiple devices or a manager dashboard would need a shared
+source of truth, i.e. a REST/GraphQL backend with real authentication, a server-side database, and
+synced attendance records. Face matching could stay on-device (privacy) or move server-side
+(centralized control). The `repository` layer is the natural seam: swapping its Room calls for
+network calls would leave the UI and ML code untouched.
+
 ## Assumptions & limitations
 
+- **No backend / no multi-device sync.** All data is local to one device. See "No backend, by design" above.
 - **Two hardcoded accounts, no real auth.** There's no signup, password hashing, or backend —
   credentials are literal strings in `LoginActivity`. This is a UI/ML demo, not a production
   auth system.
